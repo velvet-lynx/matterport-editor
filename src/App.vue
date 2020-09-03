@@ -1,14 +1,22 @@
 <template>
-  <Showcase :modelSid="modelSid" /> 
+  <div>
+    <hero></hero>
+    <showcase :modelSid="modelSid" /> 
+    <mattertag-form></mattertag-form>
+  </div>
 </template>
 
 <script>
 import Showcase from './components/Showcase'
+import Hero from './components/Hero'
+import MattertagForm from './components/MattertagForm'
 
 export default {
   name: 'App',
   components: {
+    Hero,
     Showcase,
+    MattertagForm
   },
   data: function() {
     return {

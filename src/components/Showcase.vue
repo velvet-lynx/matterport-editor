@@ -1,21 +1,40 @@
 <template>
-  <div class="showcase-wrapper">
-    <iframe 
-      :src="getTourUrl"
-      frameborder="0" allowfullscreen allow="vr"
-      id="showcase_iframe"></iframe>
-  </div>
+  <section class="section">
+    <div class="container">
+      <div class="showcase-wrapper">
+        <iframe
+          :src="getTourUrl"
+          @load="connectSdk"
+          frameborder="0" allowfullscreen allow="vr"
+          id="showcase_iframe"></iframe>
+      </div>
+    </div>
+  </section>
 </template>
 
 <script>
+import { useStore } from 'vuex'
+import { computed } from 'vue'
+
 export default {
-  name: 'Showcase',
-  props: ['modelSid'],
-  computed: {
-    getTourUrl() {
-      return `https://my.matterport.com/show?m=${this.modelSid}&play=1`
+  props: {
+    modelSid: String
+  },
+  setup(props) {
+    const store = useStore()
+    const getTourUrl = computed(
+      () => `https://my.matterport.com/show?m=${props.modelSid}&play=1`
+    )
+
+    function connectSdk() {
+      store.dispatch('connectSdk')
     }
-  }
+
+    return {
+      connectSdk,
+      getTourUrl,
+    }
+  },
 }
 </script>
 
