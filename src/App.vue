@@ -1,28 +1,35 @@
 <template>
-  <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <div>
+    <hero></hero>
+    <showcase :modelSid="modelSid" /> 
+    <mattertag-form></mattertag-form>
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import Showcase from './components/Showcase'
+import Hero from './components/Hero'
+import MattertagForm from './components/MattertagForm'
 
 export default {
   name: 'App',
   components: {
-    HelloWorld
+    Hero,
+    Showcase,
+    MattertagForm
+  },
+  data: function() {
+    return {
+      modelSid: "SxQL3iGyoDo"
+    }
+  },
+  computed: {
+    getTourUrl: function () {
+      return `https://my.matterport.com/show?m=${this.modelSid}&play=1`
+    }
   }
 }
 </script>
 
 <style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
 </style>
