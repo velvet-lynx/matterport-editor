@@ -4,6 +4,8 @@ export default createStore({
   state: {
     modelSid: "SxQL3iGyoDo",
     connectionStatus: 'notConnected',
+    subscription: {},
+    capturedPosition: {},
     sdk: {}
   },
   mutations: {
@@ -12,6 +14,15 @@ export default createStore({
     },
     SET_SDK(state, sdk) {
       state.sdk = sdk
+    },
+    SET_SUBSCRIPTION(state, subscription) {
+      state.subscription = subscription
+    },
+    UNSUBSCRIBE(state) {
+      state.subscription.cancel()
+    },
+    SET_CAPTURED_POSITION(state, position) {
+      state.capturedPosition = position
     }
   },
   actions: {
@@ -33,6 +44,23 @@ export default createStore({
       catch (e) {
         console.error(e);
       }
+    },
+    capture(context) {
+      if (context.state.connectionStatus === "connected") {
+        context.commit('SET_SUBSCRIPTION',
+          context.state.sdk.Pointer.intersection.subscribe(intersection => {
+            context.commit('SET_CAPTURED_POSITION', intersection.position)
+          })
+        )
+      }
+    },
+    endCapture(context) {
+      context.commit('UNSUBSCRIBE')
+    }
+  },
+  getters: {
+    isConnected(state) {
+      return state.connectionStatus === "connected"
     }
   }
 })

@@ -2,11 +2,14 @@
   <div>
     <hero></hero>
     <showcase :modelSid="modelSid" /> 
-    <mattertag-form></mattertag-form>
+    <mattertag-form v-if="connected"></mattertag-form>
   </div>
 </template>
 
 <script>
+import { computed } from 'vue'
+import { useStore } from 'vuex'
+
 import Showcase from './components/Showcase'
 import Hero from './components/Hero'
 import MattertagForm from './components/MattertagForm'
@@ -18,16 +21,20 @@ export default {
     Showcase,
     MattertagForm
   },
-  data: function() {
+  setup() {
+
+    const modelSid = "SxQL3iGyoDo"
+    const connected = computed(() => useStore().getters.isConnected)
+
+    const getTourUrl = computed(() => `https://my.matterport.com/show?m=${this.modelSid}&play=1`)
+
     return {
-      modelSid: "SxQL3iGyoDo"
-    }
-  },
-  computed: {
-    getTourUrl: function () {
-      return `https://my.matterport.com/show?m=${this.modelSid}&play=1`
+      modelSid,
+      getTourUrl,
+      connected
     }
   }
+  
 }
 </script>
 

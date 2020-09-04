@@ -1,47 +1,14 @@
 <template>
   <section class="section">
     <div class="container">
-      <form class="mt-6" action="" id="mattertag-form">
+      <form action="" id="mattertag-form">
 
-        <!-- <div class="field is-horizontal">
-          <div class="field-label is-normal">
-            <label class="label">Label</label> 
-          </div>
-          <div class="field-body">
-            <input v-model="label" class="input" type="text" id="mattertag-label"><br>
-          </div>
-        </div>
-        <p>{{ label }}</p> -->
         <text-field v-model="label">Label</text-field>
-        {{ label }}
 
-        <div class="field is-horizontal">
-          <div class="field-label">
-            <label class="label">Anchor Position</label>
-          </div>
-          <div class="field-body">
-            <input class="input" type="text" id="anchor-x" placeholder="X">
-            <input class="input" type="text" id="anchor-y" placeholder="Y">
-            <input class="input" type="text" id="anchor-z" placeholder="Z">
-            <!-- <button class="button" id="select-position">
-              <span class="icon">
-                <i class="fas fa-crosshairs is-link"></i>
-              </span>
-            </button> -->
-            <!-- <p id="pos"></p> -->
-          </div>
-        </div>
+        <position-field>Anchor Position</position-field>
+        <p>{ x: {{anchorPosition.x}}, y: {{anchorPosition.y}}, z: {{anchorPosition.z}} }</p>
 
-        <div class="field is-horizontal">
-          <div class="field-label">
-            <label class="label">Stem Vector</label>
-          </div>
-          <div class="field-body">
-            <input class="input" type="text" id="stem-x" placeholder="X">
-            <input class="input" type="text" id="stem-y" placeholder="Y">
-            <input class="input" type="text" id="stem-z" placeholder="Z">
-          </div>
-        </div>
+        <vector-field v-model="stemVector">Stem Vector</vector-field>
 
         <div class="field is-horizontal">
           <div class="field-label"></div>
@@ -59,21 +26,28 @@
 </template>
 
 <script>
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
+import { useStore } from 'vuex'
 import TextField from './TextField'
+import VectorField from './VectorField'
 import PositionField from './PositionField'
 
 export default {
   name: 'mattertag-form',
   components: {
     TextField,
-    
+    VectorField,
+    PositionField
   },
   setup() {
     const label = ref('')
+    const stemVector = ref({ x: 0, y: 0, z: 0 })
+    const anchorPosition = computed(() => useStore().state.capturedPosition)
 
     return {
-      label
+      label,
+      anchorPosition,
+      stemVector
     }
   }
 }

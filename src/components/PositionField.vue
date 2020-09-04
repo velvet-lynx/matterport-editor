@@ -4,36 +4,32 @@
       <label class="label"><slot></slot></label>
     </div>
     <div class="field-body">
-      <input v-model="x" class="input" type="text" placeholder="X">
-      <input v-model="y" class="input" type="text" placeholder="Y">
-      <input v-model="z" class="input" type="text" placeholder="Z">
-      <!-- <button class="button" id="select-position">
+      <button @click="capture" class="button" id="select-position">
         <span class="icon">
           <i class="fas fa-crosshairs is-link"></i>
         </span>
-      </button> -->
-      <!-- <p id="pos"></p> -->
+      </button>
     </div>
   </div>
 </template>
 
 <script>
-import { useModelWrapper } from '../utils/modelWrapper'
+import { useStore } from 'vuex'
 
 export default {
-  props: {
-    x: Number,
-    y: Number,
-    z: Number 
-  },
-  setup(props, { emit }) {
+  setup() {
+
+    const store = useStore()
+
+    function capture(e) {
+      e.preventDefault()
+      store.dispatch('capture')
+    }
+
     return {
-      xValue: useModelWrapper(props, emit, 'x'),
-      yValue: useModelWrapper(props, emit, 'y'),
-      zValue: useModelWrapper(props, emit, 'z'),
+      capture
     }
   }
-
 }
 </script>
 
