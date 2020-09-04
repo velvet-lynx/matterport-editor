@@ -1,11 +1,13 @@
 import { createStore } from 'vuex'
 
+
 export default createStore({
   state: {
     modelSid: "SxQL3iGyoDo",
     connectionStatus: 'notConnected',
     subscription: {},
     capturedPosition: {},
+    mattertagIds: [],
     sdk: {}
   },
   mutations: {
@@ -23,6 +25,9 @@ export default createStore({
     },
     SET_CAPTURED_POSITION(state, position) {
       state.capturedPosition = position
+    },
+    ADD_MATTERTAG_ID(state, id) {
+      state.mattertagIds.push(id)
     }
   },
   actions: {
@@ -56,6 +61,23 @@ export default createStore({
     },
     endCapture(context) {
       context.commit('UNSUBSCRIBE')
+    },
+    createMattertag(context, data) {
+      context.state.sdk.Mattertag.add(data).then(function(mattertagId) {
+        context.commit('ADD_MATTERTAG_ID', mattertagId)
+      })
+    },
+    addMedia(context, data) {
+      var type = null
+      switch(data.type) {
+        case "photo": type = context.state.sdk.Mattertag.MediaType.PHOTO
+      }
+      context.state.sdk.Mattertag.editBillboard(data.id, {
+        media: {
+          type,
+          src: data.src
+        }
+      })
     }
   },
   getters: {

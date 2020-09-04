@@ -15,11 +15,12 @@
           <div class="field-body">
             <div class="field">
               <div class="control">
-                <button @click="onSubmit" class="button is-primary" type="submit">Submit</button>
+                <button @click="onSubmit" class="button is-primary" type="submit">Create</button>
               </div>
             </div>
           </div>
         </div>
+
       </form>
     </div>
   </section>
@@ -40,14 +41,39 @@ export default {
     PositionField
   },
   setup() {
+    const store = useStore()
     const label = ref('')
     const stemVector = ref({ x: 0, y: 0, z: 0 })
-    const anchorPosition = computed(() => useStore().state.capturedPosition)
+    const anchorPosition = computed(() => store.state.capturedPosition)
+
+    function onSubmit(e) {
+      e.preventDefault()
+      var res = {
+        label: label.value,
+        anchorPosition: Object(anchorPosition.value.value),
+        stemVector: stemVector.value
+      } 
+      console.log(res)
+      store.dispatch('createMattertag', {
+        label: label.value,
+        anchorPosition: {
+          x: anchorPosition.value.x,
+          y: anchorPosition.value.y,
+          z: anchorPosition.value.z
+        },
+        stemVector: {
+          x: stemVector.value.x,
+          y: stemVector.value.y,
+          z: stemVector.value.z,
+        }
+      })
+    }
 
     return {
       label,
       anchorPosition,
-      stemVector
+      stemVector,
+      onSubmit
     }
   }
 }
