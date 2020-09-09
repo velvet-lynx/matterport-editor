@@ -4,9 +4,9 @@
       <label class="label"><slot></slot></label>
     </div>
     <div class="field-body">
-      <input :value="modelValue.x" @input="updateX" class="input" type="number" placeholder="X">
-      <input :value="modelValue.y" @input="updateY" class="input" type="number" placeholder="Y">
-      <input :value="modelValue.z" @input="updateZ" class="input" type="number" placeholder="Z">
+      <input :value="value.x" @input="updateX" class="input" type="text" placeholder="X">
+      <input :value="value.y" @input="updateY" class="input" type="text" placeholder="Y">
+      <input :value="value.z" @input="updateZ" class="input" type="text" placeholder="Z">
       <!-- <button class="button" id="select-position">
         <span class="icon">
           <i class="fas fa-crosshairs is-link"></i>
@@ -18,32 +18,40 @@
 </template>
 
 <script>
+// import { onMounted } from 'vue'
 
 export default {
   props: {
-    modelValue: Object,
+    value: {
+      x: String,
+      y: String,
+      z: String
+    },
   },
   setup(props, { emit }) {
 
     function updateX(e) {
-      emit('update:modelValue', {
+      emit('oninput', {
         x: e.target.value,
-        y: props.modelValue.y,
-        z: props.modelValue.z})
+        y: props.value.y,
+        z: props.value.z
+      })
     }
 
     function updateY(e) {
-      emit('update:modelValue', {
-        x: props.modelValue.x,
+      emit('oninput', {
+        x: props.value.x,
         y: e.target.value,
-        z: props.modelValue.z})
+        z: props.value.z
+      })
     }
 
     function updateZ(e) {
-      emit('update:modelValue', {
-        x: props.modelValue.x ,
-        y: props.modelValue.y,
-        z: e.target.value})
+      emit('oninput', {
+        x: props.value.x,
+        y: props.value.y,
+        z: e.target.value
+      })
     }
 
     return {

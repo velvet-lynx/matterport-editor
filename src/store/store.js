@@ -1,13 +1,31 @@
 import { createStore } from 'vuex'
 
 
+// function unProxy(data) {
+//   let res = {}
+//   Object.keys(data).forEach(key => {
+//     let elem = data[key]
+//     if (typeof(elem) === 'object')
+//       res[key] = unProxy(elem)
+//     res[key] = elem
+//   })
+//   return res
+// }
+
 export default createStore({
   state: {
     modelSid: "SxQL3iGyoDo",
     connectionStatus: 'notConnected',
-    subscription: {},
+    mattertags: {},
+    currentMattertagId: "",
+    currentMattertagInfos: {
+      label: "",
+      anchorPosition: {x: 0, y: 0, z: 0},
+      stemVector: {x: 0, y: 0, z: 0},
+    },
+    currentMattertagMedia: {},
+    subscription: null,
     capturedPosition: {},
-    mattertagIds: [],
     sdk: {}
   },
   mutations: {
@@ -22,12 +40,22 @@ export default createStore({
     },
     UNSUBSCRIBE(state) {
       state.subscription.cancel()
+      state.subscription = null
     },
-    SET_CAPTURED_POSITION(state, position) {
-      state.capturedPosition = position
+    SET_ANCHOR_POSITION(state, position) {
+      state.currentMattertagInfos.anchorPosition = position
     },
-    ADD_MATTERTAG_ID(state, id) {
-      state.mattertagIds.push(id)
+    SET_STEM_VECTOR(state, stemVector) {
+      state.currentMattertagInfos.stemVector = stemVector
+    },
+    SET_LABEL(state, label) {
+      state.currentMattertagInfos.label = label
+    },
+    ADD_MATTERTAG(state, id, data) {
+      state.mattertags[id] = {
+        ...data,
+        media: {}
+      }
     }
   },
   actions: {
@@ -50,22 +78,47 @@ export default createStore({
         console.error(e);
       }
     },
+    inputLabel(context, label) {
+      context.commit('SET_LABEL', label)
+    },
+    inputStemVector(context, stemVector) {
+      context.commit('SET_STEM_VECTOR', stemVector)
+    },
     capture(context) {
       if (context.state.connectionStatus === "connected") {
         context.commit('SET_SUBSCRIPTION',
           context.state.sdk.Pointer.intersection.subscribe(intersection => {
-            context.commit('SET_CAPTURED_POSITION', intersection.position)
+            context.commit('SET_ANCHOR_POSITION', intersection.position)
           })
         )
       }
     },
     endCapture(context) {
-      context.commit('UNSUBSCRIBE')
+      if (context.state.subscription !== null) {
+        context.commit('UNSUBSCRIBE')
+      }
     },
-    createMattertag(context, data) {
-      context.state.sdk.Mattertag.add(data).then(function(mattertagId) {
-        context.commit('ADD_MATTERTAG_ID', mattertagId)
-      })
+    createMattertag(context) {
+      let infos = context.state.currentMattertagInfos
+      let data = {
+        label: infos.label,
+        anchorPosition: {
+          x: infos.anchorPosition.x,
+          y: infos.anchorPosition.y,
+          z: infos.anchorPosition.z,
+        },
+        stemVector: {
+          x: infos.stemVector.x,
+          y: infos.stemVector.y,
+          z: infos.stemVector.z,
+        }
+      }
+      console.log(data)
+      context.state.sdk.Mattertag
+        .add(data)
+        .then(function(mattertagId) {
+          context.commit('ADD_MATTERTAG', mattertagId, data)
+        })
     },
     addMedia(context, data) {
       var type = null

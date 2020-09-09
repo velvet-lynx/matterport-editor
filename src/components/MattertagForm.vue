@@ -3,12 +3,13 @@
     <div class="container">
       <form action="" id="mattertag-form">
 
-        <text-field v-model="label">Label</text-field>
+        <text-field :value="label" @oninput="onLabelInput">Label</text-field>
 
         <position-field>Anchor Position</position-field>
         <p>{ x: {{anchorPosition.x}}, y: {{anchorPosition.y}}, z: {{anchorPosition.z}} }</p>
 
-        <vector-field v-model="stemVector">Stem Vector</vector-field>
+        <vector-field :value="stemVector" @oninput="onStemVectorInput">Stem Vector</vector-field>
+        <p>{ x: {{stemVector.x}}, y: {{stemVector.y}}, z: {{stemVector.z}} }</p>
 
         <div class="field is-horizontal">
           <div class="field-label"></div>
@@ -27,7 +28,7 @@
 </template>
 
 <script>
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
 import { useStore } from 'vuex'
 import TextField from './TextField'
 import VectorField from './VectorField'
@@ -42,38 +43,30 @@ export default {
   },
   setup() {
     const store = useStore()
-    const label = ref('')
-    const stemVector = ref({ x: 0, y: 0, z: 0 })
-    const anchorPosition = computed(() => store.state.capturedPosition)
+    const label = computed(() => store.state.currentMattertagInfos.label)
+    const stemVector = computed(() => store.state.currentMattertagInfos.stemVector)
+    const anchorPosition = computed(() => store.state.currentMattertagInfos.anchorPosition)
+
+    function onLabelInput(value) {
+      store.dispatch('inputLabel', value)
+    }
+
+    function onStemVectorInput(stemVector) {
+      store.dispatch('inputStemVector', stemVector)
+    }
 
     function onSubmit(e) {
       e.preventDefault()
-      var res = {
-        label: label.value,
-        anchorPosition: Object(anchorPosition.value.value),
-        stemVector: stemVector.value
-      } 
-      console.log(res)
-      store.dispatch('createMattertag', {
-        label: label.value,
-        anchorPosition: {
-          x: anchorPosition.value.x,
-          y: anchorPosition.value.y,
-          z: anchorPosition.value.z
-        },
-        stemVector: {
-          x: stemVector.value.x,
-          y: stemVector.value.y,
-          z: stemVector.value.z,
-        }
-      })
+      store.dispatch('createMattertag')
     }
 
     return {
       label,
       anchorPosition,
       stemVector,
-      onSubmit
+      onSubmit,
+      onLabelInput,
+      onStemVectorInput
     }
   }
 }

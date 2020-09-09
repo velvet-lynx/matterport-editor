@@ -4,22 +4,31 @@
       <label class="label"><slot></slot></label> 
     </div>
     <div class="field-body">
-      <input v-model="message" class="input" type="text" id="mattertag-label" name="label">
+      <input 
+        class="input"
+        type="text"
+        id="mattertag-label"
+        @input="onInput">
     </div>
   </div>
 </template>
 
 <script>
-import { useModelWrapper } from '../utils/modelWrapper'
+// import { useModelWrapper } from '../utils/modelWrapper'
 // import { ref } from 'vue'
 
 export default {
   props: {
-    modelValue: String,
+    value: String,
   },
-  setup(props, { emit }) {
+  setup(_, { emit }) {
+    function onInput(e) {
+      emit('oninput', e.target.value)
+    }
+
     return {
-      message: useModelWrapper(props, emit)
+      onInput
+      // message: useModelWrapper(props, emit)
     }
   }
 }
